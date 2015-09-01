@@ -1,0 +1,7 @@
+23:16:46.4693 | 10 | TRACE | Starting License Service
+23:18:05.7646 | 8 | TRACE | Starting Report Host Service
+23:18:05.9102 | 8 | INFO | Report Host Listening @ http://localhost:9000
+23:19:32.9054 | 8 | TRACE | Starting Report Host Service
+23:19:33.0517 | 8 | INFO | Report Host Listening @ http://localhost:9000
+23:26:25.6566 | 9 | TRACE | Starting Report Host Service
+23:26:25.8018 | 9 | INFO | Report Host Listening @ http://localhost:9000

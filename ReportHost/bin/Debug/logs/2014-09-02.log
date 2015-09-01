@@ -1,0 +1,16 @@
+08:27:01.7095 | 10 | TRACE | Starting Report Host Service
+08:27:01.8565 | 10 | INFO | Report Host Listening @ http://localhost:9000
+08:31:53.0441 | 9 | TRACE | Starting Report Host Service
+08:31:53.1911 | 9 | INFO | Report Host Listening @ http://localhost:9000
+08:33:23.0761 | 9 | TRACE | Starting Report Host Service
+08:33:23.2217 | 9 | INFO | Report Host Listening @ http://localhost:9000
+08:36:48.2150 | 9 | TRACE | Starting Report Host Service
+08:36:48.3810 | 9 | INFO | Report Host Listening @ http://localhost:9000
+08:40:43.6659 | 9 | TRACE | Starting Report Host Service
+08:40:43.9117 | 9 | INFO | Report Host Listening @ http://localhost:9000
+09:08:36.9426 | 10 | TRACE | Starting Report Host Service
+09:08:37.0900 | 10 | INFO | Report Host Listening @ http://localhost:9000
+09:17:57.4084 | 9 | TRACE | Starting Report Host Service
+09:17:57.5529 | 9 | INFO | Report Host Listening @ http://localhost:9000
+09:50:57.9568 | 8 | TRACE | Starting Report Host Service
+09:50:58.0988 | 8 | INFO | Report Host Listening @ http://localhost:9000
