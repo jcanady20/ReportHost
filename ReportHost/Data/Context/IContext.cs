@@ -15,7 +15,7 @@ namespace ReportHost.Data.Context
 	{
 
 		#region DbSets
-		IDbSet<Report> Reports { get; set; }
+		DbSet<Report> Reports { get; set; }
 		#endregion
 
 		Database Database { get; }

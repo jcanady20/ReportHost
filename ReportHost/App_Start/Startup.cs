@@ -18,22 +18,17 @@ namespace ReportHost
 	{
 		public void Configuration(IAppBuilder app)
 		{
-			var root = ".";
-
 			//app.Use(typeof(OwinStats.StatsMiddleWare));
 			app.UseCors(CorsOptions.AllowAll);
 
 			HttpConfiguration config = new Configuration();
 
+			config.DependencyResolver = new DependencyInjector.NinjectDependencyResolver(NinjectConfig.CreateKernel());
+
+
 			//	WEB API CORS Support
 			config.MessageHandlers.Add(new ReportHost.Service.MessageHandlers.WebApiCorsHandler());
 			app.UseWebApi(config);
-
-			//	Static File Hosting for Licensing
-			var fileSystem = new PhysicalFileSystem(root);
-			var fileOptions = new FileServerOptions();
-			fileOptions.EnableDirectoryBrowsing = false;
-			app.UseFileServer(fileOptions);
 		}
 	}
 }

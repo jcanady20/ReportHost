@@ -7,18 +7,22 @@ using System.Threading.Tasks;
 using System.Data.Entity;
 
 using ReportHost.Logging;
+using ReportHost.Data.Context;
 using ReportHost.Data.Models;
 using ReportHost.Data.Reports;
 
 namespace ReportHost.Service.api
 {
 	[RoutePrefix("api/reports")]
-	public class ReportsController : BaseApiController
+	public class ReportsController : ApiController
 	{
+		private IContext m_db;
 		private ILogger m_logger;
-		internal ReportsController()
+
+		public ReportsController(ILogger logger, IContext context)
 		{
-			m_logger = new NLogger();
+			m_logger = logger;
+			m_db = context;
 		}
 
 		[HttpGet]
@@ -45,7 +49,7 @@ namespace ReportHost.Service.api
 			try
 			{
 				IEnumerable<ColumnDetail> columns = null;
-				using (var rg = new Data.Reports.ReportGenerator())
+				using (var rg = new Data.Reports.ReportGenerator(m_db))
 				{
 					columns = await rg.TableColumsAsync(tableName);
 				}
@@ -66,7 +70,7 @@ namespace ReportHost.Service.api
 			try
 			{
 				IEnumerable<TableDetail> tables = null;
-				using(var rg = new Data.Reports.ReportGenerator())
+				using(var rg = new Data.Reports.ReportGenerator(m_db))
 				{
 					tables = await rg.TableNamesAsync();
 				}
@@ -86,7 +90,7 @@ namespace ReportHost.Service.api
 			try
 			{
 				IEnumerable<IDictionary<string, object>> result = null;
-				using(var rg = new Data.Reports.ReportGenerator())
+				using(var rg = new Data.Reports.ReportGenerator(m_db))
 				{
 					result = await rg.GenerateAsync(criteria);
 				}

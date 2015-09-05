@@ -9,17 +9,18 @@ using System.Threading.Tasks;
 using ReportHost.Extensions;
 using System.Configuration;
 using ReportHost.Data.Models;
+using ReportHost.Data.Context;
 
 namespace ReportHost.Data.Reports
 {
 	public class ReportGenerator : IDisposable
 	{
-		private Context.IContext m_db;
+		private IContext m_db;
 
-		public ReportGenerator()
+		public ReportGenerator(IContext context)
 		{
-			m_db = Context.ContextFactory.CreateContext();
-		}
+			m_db = context;
+        }
 		
 		public IEnumerable<Dictionary<string, object>> Generate(ReportCriteria criteria)
 		{

@@ -18,7 +18,7 @@ namespace ReportHost.Data.Context
 		public Context(string nameOrConnectionString) : base(nameOrConnectionString) { }
 
 		#region DbSets
-		public IDbSet<Report> Reports { get; set; }
+		public DbSet<Report> Reports { get; set; }
 		#endregion
 
 		protected override void OnModelCreating(DbModelBuilder modelBuilder)
