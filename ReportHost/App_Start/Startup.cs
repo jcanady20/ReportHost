@@ -10,7 +10,9 @@ using Microsoft.Owin.Cors;
 using System.Web.Http;
 using System.IO;
 using System.Reflection;
-
+using Ninject;
+using Ninject.Web.Common.OwinHost;
+using Ninject.Web.WebApi.OwinHost;
 
 namespace ReportHost
 {
@@ -22,13 +24,10 @@ namespace ReportHost
 			app.UseCors(CorsOptions.AllowAll);
 
 			HttpConfiguration config = new Configuration();
-
-			config.DependencyResolver = new DependencyInjector.NinjectDependencyResolver(NinjectConfig.CreateKernel());
-
-
 			//	WEB API CORS Support
 			config.MessageHandlers.Add(new ReportHost.Service.MessageHandlers.WebApiCorsHandler());
-			app.UseWebApi(config);
-		}
+
+            app.UseNinjectMiddleware(NinjectConfig.CreateKernel).UseNinjectWebApi(config);
+        }
 	}
 }

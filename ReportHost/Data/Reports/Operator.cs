@@ -2,7 +2,7 @@
 
 namespace ReportHost.Data.Reports
 {
-	public enum ReportOperator
+	public enum Operator
 	{
 		[DefaultValue("=")]
 		Equals = 1,

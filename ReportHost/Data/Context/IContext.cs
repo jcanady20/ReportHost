@@ -16,6 +16,10 @@ namespace ReportHost.Data.Context
 
 		#region DbSets
 		DbSet<Report> Reports { get; set; }
+		DbSet<Table> Tables { get; set; }
+		DbSet<Schema> Schemas { get; set; }
+		DbSet<DataType> DataTypes { get; set; }
+		DbSet<Column> Columns { get; set; }
 		#endregion
 
 		Database Database { get; }

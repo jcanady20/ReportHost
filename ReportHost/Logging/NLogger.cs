@@ -60,12 +60,12 @@ namespace ReportHost.Logging
 
 		public void Error(Exception x)
 		{
-			_logger.Error(x.BuildExceptionMessage(), x);
+            _logger.Error(x, x.BuildExceptionMessage(), null);
 		}
 
 		public void Fatal(Exception x)
 		{
-			_logger.Fatal(x.BuildExceptionMessage(), x);
+            _logger.Fatal(x, x.BuildExceptionMessage(), null);
 		}
 	}
 }

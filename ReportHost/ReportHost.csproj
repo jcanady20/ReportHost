@@ -78,8 +78,28 @@
       <HintPath>..\packages\Ninject.3.2.2.0\lib\net45-full\Ninject.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Ninject.Extensions.ContextPreservation, Version=3.2.0.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ninject.Extensions.ContextPreservation.3.2.0.0\lib\net45-full\Ninject.Extensions.ContextPreservation.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Ninject.Extensions.NamedScope, Version=3.2.0.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ninject.Extensions.NamedScope.3.2.0.0\lib\net45-full\Ninject.Extensions.NamedScope.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Ninject.Web.Common, Version=3.2.0.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
       <HintPath>..\packages\Ninject.Web.Common.3.2.3.0\lib\net45-full\Ninject.Web.Common.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Ninject.Web.Common.OwinHost, Version=3.2.0.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ninject.Web.Common.OwinHost.3.2.3.0\lib\net45-full\Ninject.Web.Common.OwinHost.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Ninject.Web.WebApi, Version=3.2.0.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ninject.Web.WebApi.3.2.4.0\lib\net45-full\Ninject.Web.WebApi.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Ninject.Web.WebApi.OwinHost, Version=3.2.0.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ninject.Web.WebApi.OwinHost.3.2.4.0\lib\net45-full\Ninject.Web.WebApi.OwinHost.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="NLog, Version=4.1.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
@@ -126,21 +146,30 @@
     <Compile Include="App_Start\Configuration.cs" />
     <Compile Include="App_Start\NinjectConfig.cs" />
     <Compile Include="App_Start\Startup.cs" />
+    <Compile Include="DataHelpers.cs" />
+    <Compile Include="Data\Configuration\ColumnMap.cs" />
+    <Compile Include="Data\Configuration\DataTypeMap.cs" />
+    <Compile Include="Data\Entities\Column.cs" />
+    <Compile Include="Data\Entities\DataType.cs" />
+    <Compile Include="Data\Configuration\SchemaMap.cs" />
+    <Compile Include="Data\Configuration\TableMap.cs" />
     <Compile Include="Data\Context\Context.cs" />
     <Compile Include="Data\Context\ContextFactory.cs" />
     <Compile Include="Data\Context\IContext.cs" />
     <Compile Include="Data\Entities\Report.cs" />
-    <Compile Include="Data\Reports\ReportCondition.cs" />
-    <Compile Include="Data\Reports\ReportCriteria.cs" />
-    <Compile Include="Data\Reports\ReportOperator.cs" />
-    <Compile Include="Data\Reports\ReportParameter.cs" />
+    <Compile Include="Data\Entities\Schema.cs" />
+    <Compile Include="Data\Entities\Table.cs" />
     <Compile Include="Data\Models\ColumnDetail.cs" />
+    <Compile Include="Data\Queries\ReportQueries.cs" />
+    <Compile Include="Data\Queries\TableQueries.cs" />
+    <Compile Include="Data\Reports\Condition.cs" />
+    <Compile Include="Data\Reports\Criteria.cs" />
+    <Compile Include="Data\Reports\Operator.cs" />
+    <Compile Include="Data\Reports\Parameter.cs" />
     <Compile Include="Data\Models\TableDetail.cs" />
     <Compile Include="Data\PagedList%27.cs" />
-    <Compile Include="Data\Reports\ReportGenerator.cs" />
+    <Compile Include="Data\Reports\Generator.cs" />
     <Compile Include="Data\Reports\QueryGenerator.cs" />
-    <Compile Include="DependencyInjector\NinjectDependencyResolver.cs" />
-    <Compile Include="DependencyInjector\NinjectDependencyScope.cs" />
     <Compile Include="Extensions\DataReaderExtensions.cs" />
     <Compile Include="Extensions\DataRowExtensions.cs" />
     <Compile Include="Extensions\EnumExtensions.cs" />
@@ -149,10 +178,10 @@
     <Compile Include="Logging\NLogger.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ServiceHelper.cs" />
     <Compile Include="ServiceInstaller.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Service\api\BaseApiController.cs" />
     <Compile Include="Service\api\ReportsController.cs" />
     <Compile Include="Service\MessageHandlers\WebApiCorsHandler.cs" />
     <Compile Include="Service\ReportService.cs">
@@ -170,10 +199,7 @@
     </None>
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Data\Configuration\" />
-    <Folder Include="Data\Queries\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -10,6 +10,7 @@ using ReportHost.Logging;
 using ReportHost.Data.Context;
 using ReportHost.Data.Models;
 using ReportHost.Data.Reports;
+using ReportHost.Data.Queries;
 
 namespace ReportHost.Service.api
 {
@@ -26,7 +27,7 @@ namespace ReportHost.Service.api
 		}
 
 		[HttpGet]
-		[Route("reports")]
+		[Route("")]
 		public async Task<IHttpActionResult> GetReports()
 		{
 			try
@@ -48,11 +49,7 @@ namespace ReportHost.Service.api
 		{
 			try
 			{
-				IEnumerable<ColumnDetail> columns = null;
-				using (var rg = new Data.Reports.ReportGenerator(m_db))
-				{
-					columns = await rg.TableColumsAsync(tableName);
-				}
+				var columns = await m_db.Tables.GetTableColumnsAsync(tableName);
 
 				return Ok(columns);
 			}
@@ -69,11 +66,7 @@ namespace ReportHost.Service.api
 		{
 			try
 			{
-				IEnumerable<TableDetail> tables = null;
-				using(var rg = new Data.Reports.ReportGenerator(m_db))
-				{
-					tables = await rg.TableNamesAsync();
-				}
+				var tables = await m_db.Tables.GetTables().Select(r => new TableDetail() { SchemaName = r.Schema.Name, TableName = r.Name }).ToListAsync();
 				return Ok(tables);
 			}
 			catch(Exception e)
@@ -85,12 +78,12 @@ namespace ReportHost.Service.api
 
 		[HttpPost]
 		[Route("results")]
-		public async Task<IHttpActionResult> GetReportResults([FromBody]ReportCriteria criteria)
+		public async Task<IHttpActionResult> GetReportResults([FromBody]Criteria criteria)
 		{
 			try
 			{
 				IEnumerable<IDictionary<string, object>> result = null;
-				using(var rg = new Data.Reports.ReportGenerator(m_db))
+				using(var rg = new Data.Reports.Generator(m_db))
 				{
 					result = await rg.GenerateAsync(criteria);
 				}

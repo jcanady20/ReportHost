@@ -19,6 +19,10 @@ namespace ReportHost.Data.Context
 
 		#region DbSets
 		public DbSet<Report> Reports { get; set; }
+		public DbSet<Table> Tables { get; set; }
+		public DbSet<Schema> Schemas { get; set; }
+		public DbSet<DataType> DataTypes { get; set; }
+		public DbSet<Column> Columns { get; set; }
 		#endregion
 
 		protected override void OnModelCreating(DbModelBuilder modelBuilder)

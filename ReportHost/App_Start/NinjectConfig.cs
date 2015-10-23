@@ -6,11 +6,16 @@ namespace ReportHost
 {
 	public static class NinjectConfig
 	{
+        private static IKernel m_kernal;
 		public static IKernel CreateKernel()
 		{
-			var kernel = new StandardKernel();
-			RegisterBindings(kernel);
-			return kernel;
+            if(m_kernal == null)
+            {
+                m_kernal = new StandardKernel();
+                RegisterBindings(m_kernal);
+            }
+			
+			return m_kernal;
 		}
 
 		private static void RegisterBindings(IKernel kernel)

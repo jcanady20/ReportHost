@@ -21,7 +21,7 @@ namespace LicenseManager
 			serviceAdmin.StartType = ServiceStartMode.Automatic;
 			serviceAdmin.ServiceName = "ReportHostService";
 			serviceAdmin.DisplayName = "Report Host Service";
-			serviceAdmin.Description = "This service is used to host Report Services for VisDoc";
+			serviceAdmin.Description = "This service is used to host Report Services";
 
 			Installers.Add(process);
 			Installers.Add(serviceAdmin);

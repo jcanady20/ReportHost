@@ -12,7 +12,7 @@ namespace ReportHost.Data.Reports
 {
 	internal class QueryGenerator
 	{
-		internal static string RenderReportQuery(string baseQuery, ReportCriteria criteria, ICollection<ColumnDetail> columnDetails)
+		internal static string RenderReportQuery(string baseQuery, Criteria criteria, ICollection<ColumnDetail> columnDetails)
 		{
 			var qryFrom = columnDetails.Select(r => r.BaseTableName).FirstOrDefault();
 
@@ -33,7 +33,7 @@ namespace ReportHost.Data.Reports
 			return sb.ToString();
 		}
 
-		private static string AddColumns(IList<string> columns)
+		private static string AddColumns(IEnumerable<string> columns)
 		{
 			var sb = new StringBuilder();
 			sb.Append(",");
@@ -43,14 +43,7 @@ namespace ReportHost.Data.Reports
 			}
 			else
 			{
-				for (int i = 0; i < columns.Count; i++)
-				{
-					if (i > 0)
-					{
-						sb.Append(", ");
-					}
-					sb.AppendFormat("[{0}]", columns[i]);
-				}
+                sb.Append(String.Join(",", columns));
 			}
 
 			return sb.ToString();
@@ -73,7 +66,7 @@ namespace ReportHost.Data.Reports
 			return sb.ToString();
 		}
 
-		private static string AddParameters(ReportCriteria criteria)
+		private static string AddParameters(Criteria criteria)
 		{
 			var sb = new StringBuilder();
 
@@ -89,7 +82,7 @@ namespace ReportHost.Data.Reports
 
 				//	Add Operator and Value(s)
 				//	Handle IN clauses
-				if (kp.Operator == ReportOperator.In)
+				if (kp.Operator == Operator.In)
 				{
 					sb.Append(" IN (");
 					if (kp.Values != null && kp.Values.Count > 0)
@@ -102,7 +95,7 @@ namespace ReportHost.Data.Reports
 					}
 					sb.Append(")");
 				}
-				else if (kp.Operator == ReportOperator.Between)
+				else if (kp.Operator == Operator.Between)
 				{
 					if (kp.Values.Count == 2)
 					{
@@ -117,12 +110,12 @@ namespace ReportHost.Data.Reports
 			return sb.ToString();
 		}
 
-		private static string AddOperator(ReportOperator reportOperator)
+		private static string AddOperator(Operator reportOperator)
 		{
 			return reportOperator.GetAttribute<System.ComponentModel.DefaultValueAttribute>().Value.ToString();
 		}
 
-		private static string AddCondition(ReportCondition reportCondition)
+		private static string AddCondition(Condition reportCondition)
 		{
 			return reportCondition.GetAttribute<System.ComponentModel.DefaultValueAttribute>().Value.ToString();
 		}

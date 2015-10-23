@@ -10,65 +10,84 @@ using System.Threading;
 
 using Microsoft.Owin.Hosting;
 using System.ServiceProcess;
+using System.Text.RegularExpressions;
+using ReportHost.Service;
 
 namespace ReportHost
 {
 	partial class Program
 	{
 		protected static Service.ReportService m_service;
-		protected static Type m_type = typeof(Program);
+        protected static string m_prompt = ":>";
+        protected static Type m_type = typeof(Program);
 		protected static List<MethodInfo> m_methods = null;
 
 		[STAThread]
-		static void Main(string[] args)
-		{
-			if (Environment.UserInteractive == false)
-			{
-				ServiceBase[] ServicesToRun = new ServiceBase[] { new Service.ReportService() };
-				ServiceBase.Run(ServicesToRun);
-			}
-			else
-			{
-				CreateMethodCache();
-				AddTraceListeners();
+        static void Main(string[] args)
+        {
+            AddTraceListeners();
 
-				Console.Clear();
-				Console.ForegroundColor = ConsoleColor.White;
-				Console.BufferHeight = 300;
-				Console.BufferWidth = 100;
-				Console.Title = "Report Service Host";
+            if (Environment.UserInteractive == false)
+            {
+                ServiceBase[] ServicesToRun = new ServiceBase[] { new ReportService() };
+                ServiceBase.Run(ServicesToRun);
+            }
+            else
+            {
+                CreateMethodCache();
 
-				if (args.Length > 0)
-				{
-					RunCommand(args);
-					return;
-				}
+                Console.Clear();
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.WindowWidth = 80;
+                Console.WindowHeight = 20;
+                Console.BufferWidth = 100;
+                Console.BufferHeight = 120;
+                Console.Title = "ServiceProvider";
 
-				bool pContinue = true;
-				while (pContinue)
-				{
-					Console.Write(":>");
+                if (args.Length > 0)
+                {
+                    RunCommand(args);
+                    return;
+                }
+                StartService();
 
-					string[] Coms = Console.ReadLine().Split(new char[] { ' ' });
-					if (Coms.Length == 0)
-						continue;
+                MainLoop();
+            }
+        }
+        static void MainLoop()
+        {
+            bool pContinue = true;
+            while (pContinue)
+            {
+                Console.Write(m_prompt);
 
-					switch (Coms[0].ToLower())
-					{
-						case "exit":
-						case "quit":
-							pContinue = false;
-							break;
-						default:
-							RunCommand(Coms);
-							break;
-					}
-					Console.WriteLine("");
-				}
-			}
-		}
+                var parms = ParseCommand(Console.ReadLine());
+                if (parms.Length == 0)
+                    continue;
 
-		static void RunCommand(string[] args)
+                switch (parms[0].ToLower())
+                {
+                    case "exit":
+                    case "quit":
+                        pContinue = false;
+                        break;
+                    default:
+                        RunCommand(parms);
+                        break;
+                }
+                Console.WriteLine("");
+            }
+        }
+        static string[] ParseCommand(string args)
+        {
+            var parts = Regex.Matches(args, @"[\""].+?[\""]|[^ ]+")
+                .Cast<Match>()
+                .Select(x => x.Value.Replace("\"", ""))
+                .ToArray();
+            return parts;
+        }
+
+        static void RunCommand(string[] args)
 		{
 			string CallingMethod = args[0];
 			object[] param = new object[] { };
@@ -176,61 +195,6 @@ namespace ReportHost
 			Process.Start(Path.Combine(GetCurrentPath(), "ApplicationLogs"));
 		}
 
-		[System.ComponentModel.Description("Install Service")]
-		static void InstallService()
-		{
-			try
-			{
-				// "/LogFile=" - to suppress install log creation
-				System.Configuration.Install.ManagedInstallerClass.InstallHelper(new string[] { "/LogFile=", System.Reflection.Assembly.GetExecutingAssembly().Location });
-			}
-			catch { }
-		}
-
-		[System.ComponentModel.Description("Uninstall Service")]
-		static void UninstallService()
-		{
-			try
-			{
-				// "/LogFile=" - to suppress uninstall log creation
-				System.Configuration.Install.ManagedInstallerClass.InstallHelper(new string[] { "/u", "/LogFile=", System.Reflection.Assembly.GetExecutingAssembly().Location });
-			}
-			catch { }
-		}
-
-		[System.ComponentModel.Description("Create Service EventLog")]
-		static void CreateEventLog()
-		{
-			if (!System.Diagnostics.EventLog.SourceExists(Service.ReportService.EventLogSource))
-			{
-				System.Diagnostics.EventLog.CreateEventSource(Service.ReportService.EventLogSource, Service.ReportService.EventLogName);
-			}
-		}
-
-		[System.ComponentModel.Description("Start Service Interactively")]
-		static void StartService()
-		{
-			m_service = new Service.ReportService();
-			m_service.Start();
-		}
-
-		[System.ComponentModel.Description("Stops the Service")]
-		static void StopService()
-		{
-			if (m_service != null && m_service.CanStop)
-				m_service.Stop();
-		}
-
-		static void ls()
-		{
-			var path = @"C:\Windows";
-			var di = new DirectoryInfo(path);
-			foreach (var file in di.EnumerateFiles())
-			{
-				Console.WriteLine(file.Name);
-			}
-		}
-
 		static TimeSpan CalculateEta(DateTime startTime, int totalItems, int completeItems)
 		{
 			TimeSpan _eta = TimeSpan.MinValue;
@@ -271,20 +235,6 @@ namespace ReportHost
 			var asm = Assembly.GetExecutingAssembly();
 			var fi = new FileInfo(asm.Location);
 			return fi.DirectoryName;
-		}
-
-		static void HexDump(byte[] bytes)
-		{
-			for (int line = 0; line < bytes.Length; line += 16)
-			{
-				byte[] lineBytes = bytes.Skip(line).Take(16).ToArray();
-				System.Text.StringBuilder sb = new System.Text.StringBuilder();
-				sb.AppendFormat("{0:x8} ", line);
-				sb.Append(string.Join(" ", lineBytes.Select(b => b.ToString("x2")).ToArray()).PadRight(16 * 3));
-				sb.Append(" ");
-				sb.Append(new string(lineBytes.Select(b => b < 32 ? '.' : (char)b).ToArray()));
-				Console.WriteLine(sb);
-			}
 		}
 
 		static void CreateMethodCache()

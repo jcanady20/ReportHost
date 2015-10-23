@@ -3,7 +3,7 @@ using System.ComponentModel;
 
 namespace ReportHost.Data.Reports
 {
-	public enum ReportCondition
+	public enum Condition
 	{
 		[DefaultValue("AND")]
 		AND = 1,

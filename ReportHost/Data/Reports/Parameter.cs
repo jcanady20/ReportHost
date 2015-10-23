@@ -2,15 +2,15 @@
 
 namespace ReportHost.Data.Reports
 {
-	public class ReportParameter
+	public class Parameter
 	{
-		public ReportParameter()
+		public Parameter()
 		{
 			//Values = new List<object>();
-			Condition = ReportCondition.AND;
+			Condition = Condition.AND;
 		}
-		public ReportCondition Condition { get; set; }
-		public ReportOperator Operator { get; set; }
+		public Condition Condition { get; set; }
+		public Operator Operator { get; set; }
 		public bool IsNot { get; set; }
 		public string Key { get; set; }
 		public object Value { get; set; }
