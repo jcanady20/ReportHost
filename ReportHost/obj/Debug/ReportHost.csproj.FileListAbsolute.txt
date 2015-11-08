@@ -11,7 +11,6 @@ D:\Projects\ReportHost\ReportHost\bin\Debug\Microsoft.Owin.Host.HttpListener.dll
 D:\Projects\ReportHost\ReportHost\bin\Debug\Microsoft.Owin.Hosting.dll
 D:\Projects\ReportHost\ReportHost\bin\Debug\Microsoft.Owin.StaticFiles.dll
 D:\Projects\ReportHost\ReportHost\bin\Debug\Newtonsoft.Json.dll
-D:\Projects\ReportHost\ReportHost\bin\Debug\NLog.dll
 D:\Projects\ReportHost\ReportHost\bin\Debug\Owin.dll
 D:\Projects\ReportHost\ReportHost\bin\Debug\System.Net.Http.Formatting.dll
 D:\Projects\ReportHost\ReportHost\bin\Debug\System.Web.Cors.dll
@@ -39,3 +38,13 @@ D:\Projects\ReportHost\ReportHost\bin\Debug\Ninject.dll
 D:\Projects\ReportHost\ReportHost\bin\Debug\Ninject.Web.Common.dll
 D:\Projects\ReportHost\ReportHost\bin\Debug\Ninject.xml
 D:\Projects\ReportHost\ReportHost\bin\Debug\Ninject.Web.Common.xml
+D:\Projects\ReportHost\ReportHost\bin\Debug\Ninject.Extensions.ContextPreservation.dll
+D:\Projects\ReportHost\ReportHost\bin\Debug\Ninject.Extensions.NamedScope.dll
+D:\Projects\ReportHost\ReportHost\bin\Debug\Ninject.Web.Common.OwinHost.dll
+D:\Projects\ReportHost\ReportHost\bin\Debug\Ninject.Web.WebApi.dll
+D:\Projects\ReportHost\ReportHost\bin\Debug\Ninject.Web.WebApi.OwinHost.dll
+D:\Projects\ReportHost\ReportHost\bin\Debug\Ninject.Extensions.ContextPreservation.xml
+D:\Projects\ReportHost\ReportHost\bin\Debug\Ninject.Extensions.NamedScope.xml
+D:\Projects\ReportHost\ReportHost\bin\Debug\Ninject.Web.Common.OwinHost.xml
+D:\Projects\ReportHost\ReportHost\bin\Debug\Ninject.Web.WebApi.xml
+D:\Projects\ReportHost\ReportHost\bin\Debug\Ninject.Web.WebApi.OwinHost.xml
