@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿namespace ReportHost.Data.Models;
 
-namespace ReportHost.Data.Models
+public class TableDetail
 {
-	public class TableDetail
-	{
-		public string SchemaName { get; set; }
-		public string TableName { get; set; }
-	}
+	public string SchemaName { get; set; }
+	public string TableName { get; set; }
 }
+

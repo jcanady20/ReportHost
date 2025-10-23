@@ -1,8 +1,7 @@
-﻿namespace ReportHost.Data.Entities
+﻿namespace ReportHost.Data.Entities;
+
+public class DataType
 {
-	public class DataType
-	{
-		public byte Id { get; set; }
-		public string Name { get; set; }
-	}
+	public byte Id { get; set; }
+	public string Name { get; set; }
 }

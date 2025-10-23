@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-
-namespace ReportHost.Data.Reports
+﻿namespace ReportHost.Data.Reports
 {
 	public class Parameter
 	{

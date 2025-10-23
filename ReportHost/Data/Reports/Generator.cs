@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Data;
+﻿using System.Data;
 using System.Data.Entity;
 using System.Data.SqlClient;
-using System.Threading.Tasks;
 
 using ReportHost.Extensions;
 using System.Configuration;
@@ -17,11 +13,13 @@ namespace ReportHost.Data.Reports
 {
 	public class Generator : IDisposable
 	{
-		private IContext m_db;
+		private readonly ReportContext _db;
+		private readonly IConfiguration _configuration;
 
-		public Generator(IContext context)
+		public Generator(ReportContext context, IConfiguration configuration)
 		{
-			m_db = context;
+			_db = context;
+			_configuration = configuration;
         }
 		
 		public IEnumerable<Dictionary<string, object>> Generate(Criteria criteria)
@@ -42,13 +40,13 @@ namespace ReportHost.Data.Reports
 
 		public IEnumerable<Column> TableColumns(string tableName, string schemaName = "dbo")
 		{
-			var columns = m_db.GetTableColumns(tableName, schemaName);
+			var columns = _db.GetTableColumns(tableName, schemaName);
 			return columns;
 		}
 
 		public async Task<IEnumerable<Column>> TableColumsAsync(string tableName, string schemaName = "dbo")
 		{
-			var columns = await m_db.Tables.GetTableColumnsAsync(tableName, schemaName);
+			var columns = await _db.Tables.GetTableColumnsAsync(tableName, schemaName);
 			return columns;
 		}
 
@@ -57,7 +55,7 @@ namespace ReportHost.Data.Reports
 			var query = string.Empty;
 			if (criteria.ReportId.HasValue)
 			{
-				var report = m_db.GetReportById(criteria.ReportId.Value);
+				var report = _db.GetReportById(criteria.ReportId.Value);
 				if (report != null)
 				{
 					query = report.Query;
@@ -79,7 +77,7 @@ namespace ReportHost.Data.Reports
 			var query = String.Empty;
             if (criteria.ReportId.HasValue)
             {
-                var report = await m_db.GetReportByIdAsync(criteria.ReportId.Value);
+                var report = await _db.GetReportByIdAsync(criteria.ReportId.Value);
                 if (report != null)
                 {
                     query = report.Query;
@@ -207,17 +205,10 @@ namespace ReportHost.Data.Reports
 
 		private string GetConnectionString()
 		{
-			var connSting = string.Empty;
-			if(m_db.Database != null)
-			{
-				connSting = m_db.Database.Connection.ConnectionString;
-			}
-			else
-			{
-				connSting = ConfigurationManager.ConnectionStrings["SqlServer"].ConnectionString;
-			}
-
-			return connSting;
+			if (_db.Database is not null)
+				return _db.Database.Connection.ConnectionString;
+			
+			return _configuration.GetConnectionString("SqlServer");
 		}
 
 		public void Dispose()
@@ -230,7 +221,7 @@ namespace ReportHost.Data.Reports
 		{
 			if(disposing)
 			{
-				m_db.Dispose();
+				_db.Dispose();
 			}
 		}
 	}

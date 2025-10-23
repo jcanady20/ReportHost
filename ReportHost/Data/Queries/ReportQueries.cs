@@ -1,37 +1,33 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Data.Entity;
-using System.Threading.Tasks;
+﻿using System.Data.Entity;
 
 using ReportHost.Data.Context;
 using ReportHost.Data.Entities;
 
-namespace ReportHost.Data.Queries
+namespace ReportHost.Data.Queries;
+
+public static class ReportQueries
 {
-	public static class ReportQueries
+	public static IQueryable<Report> GetReports(this ReportContext db)
 	{
-		public static IQueryable<Report> GetReports(this IContext db)
-		{
-			var qry = db.Reports.AsQueryable();
+		var qry = db.Reports.AsQueryable();
 
-			return qry;
-		}
+		return qry;
+	}
 
-		public static Report GetReportById(this IContext db, int reportId)
-		{
-			var qry = db.GetReports();
-			var report = qry.FirstOrDefault(x => x.Id == reportId);
+	public static Report GetReportById(this ReportContext db, int reportId)
+	{
+		var qry = db.GetReports();
+		var report = qry.FirstOrDefault(x => x.Id == reportId);
 
-			return report;
-		}
+		return report;
+	}
 
-		public static async Task<Report> GetReportByIdAsync(this IContext db, int reportId)
-		{
-			var qry = db.GetReports();
-			var report = await qry.FirstOrDefaultAsync(x => x.Id == reportId);
+	public static async Task<Report> GetReportByIdAsync(this ReportContext db, int reportId)
+	{
+		var qry = db.GetReports();
+		var report = await qry.FirstOrDefaultAsync(x => x.Id == reportId);
 
-			return report;
-		}
+		return report;
 	}
 }
+
