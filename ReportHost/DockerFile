@@ -1,0 +1,28 @@
+FROM mcr.microsoft.com/dotnet/sdk:8.0-bookworm-slim AS build
+ENV DOTNET_CLI_TELEMETRY_OPTOUT=1
+ARG ASSEMBLY_FILE_VER=0.0.0
+ARG PRODUCT_VERSION=0.0.0
+ARG CONFIGURATION=Debug
+RUN echo "ASSEMBLY_FILE_VER=$ASSEMBLY_FILE_VER PRODUCT_VERSION=$PRODUCT_VERSION CONFIGURATION=$CONFIGURATION"
+WORKDIR /src
+COPY ./src/ .
+RUN dotnet restore \
+    --nologo \
+    --no-cache \
+    "ReportHost/ReportHost.csproj"
+
+RUN dotnet publish \
+    -c $CONFIGURATION \
+    --nologo \
+    --no-restore \
+    /p:Version=$PRODUCT_VERSION \
+    /p:AssemblyVersion=$ASSEMBLY_FILE_VER \
+    "ReportHost/ReportHost.csproj" \
+    -o /publish
+
+FROM mcr.microsoft.com/dotnet/aspnet:8.0-bookworm-slim
+ENV DOTNET_CLI_TELEMETRY_OPTOUT=1
+WORKDIR /app
+COPY --from=build /publish .
+RUN chmod +x ./entrypoint.sh
+ENTRYPOINT ["./entrypoint.sh"]
