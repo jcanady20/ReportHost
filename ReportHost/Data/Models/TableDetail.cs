@@ -1,5 +1,6 @@
 ﻿namespace ReportHost.Data.Models;
 
+[ExcludeFromCodeCoverage]
 public class TableDetail
 {
 	public string SchemaName { get; set; }

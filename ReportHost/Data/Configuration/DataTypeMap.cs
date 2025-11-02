@@ -1,14 +1,15 @@
-﻿using System.Data.Entity.ModelConfiguration;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ReportHost.Data.Configuration;
 
-public class DataTypeMap : EntityTypeConfiguration<Entities.DataType>
+public class DataTypeMap : IEntityTypeConfiguration<Entities.DataType>
 {
-	public DataTypeMap()
+	public void Configure(EntityTypeBuilder<Entities.DataType> builder)
 	{
-		Map(x => x.ToTable("sys.types"));
-		HasKey(x => x.Id);
-		Property(x => x.Id).HasColumnName("system_type_id");
+		builder.ToTable("sys.types");
+		builder.HasKey(x => x.Id);
+		builder.Property(x => x.Id).HasColumnName("system_type_id");
 	}
 }
 

@@ -1,4 +1,4 @@
-﻿using System.Data.Entity;
+﻿using Microsoft.EntityFrameworkCore;
 
 using ReportHost.Data.Context;
 using ReportHost.Data.Entities;
@@ -9,7 +9,7 @@ public static class TableQueries
 {
     public static IQueryable<Table> GetTables(this IQueryable<Table> tbls)
     {
-        var qry = tbls.Include(x => x.Schema);
+        var qry = tbls.Include(x => x.Schema).AsQueryable();
         qry = qry.Where(x => x.IsMSShipped == false);
         qry = qry.Where(x => x.ObjectType == "U");
         return qry;
@@ -17,7 +17,7 @@ public static class TableQueries
 
     public static async Task<IEnumerable<Column>> GetTableColumnsAsync(this IQueryable<Table> tbl, string tableName, string schemaName = "dbo")
     {
-        var qry = tbl.Include(x => x.Columns);
+        var qry = tbl.Include(x => x.Columns).AsQueryable();
         qry = qry.Include(x => x.Schema);
         qry = qry.Where(x => x.Name == tableName);
         qry = qry.Where(x => x.Schema.Name == schemaName);

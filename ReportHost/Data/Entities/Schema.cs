@@ -1,5 +1,6 @@
 ﻿namespace ReportHost.Data.Entities;
 
+[ExcludeFromCodeCoverage]
 public class Schema
 {
 	public Schema() { }

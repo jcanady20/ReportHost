@@ -1,8 +1,9 @@
 ﻿namespace ReportHost.Data.Models;
 
+[ExcludeFromCodeCoverage]
 public class ColumnDetail
 {
-	public string BaseTableName { get; set;  }
+	public string BaseTableName { get; set; }
 	public string ColumnName { get; set; }
 	public int ColumnOrdinal { get; set; }
 	public bool IsKey { get; set; }

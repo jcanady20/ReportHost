@@ -1,15 +1,14 @@
-﻿using System;
-using System.Data.Entity;
-using System.Data.Entity.ModelConfiguration;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ReportHost.Data.Configuration;
-public class SchemaMap : EntityTypeConfiguration<Entities.Schema>
+public class SchemaMap : IEntityTypeConfiguration<Entities.Schema>
 {
-	public SchemaMap()
+	public void Configure(EntityTypeBuilder<Entities.Schema> builder)
 	{
-		Map(x => x.ToTable("sys.schemas"));
-		HasKey(x => x.Id);
-		Property(x => x.Id).HasColumnName("schema_id");
+		builder.ToTable("sys.schemas");
+		builder.HasKey(x => x.Id);
+		builder.Property(x => x.Id).HasColumnName("schema_id");
 	}
 }
 

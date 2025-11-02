@@ -1,19 +1,18 @@
-﻿using System;
-using System.Data.Entity;
-using System.Data.Entity.ModelConfiguration;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace ReportHost.Data.Configuration
 {
-	public class TableMap : EntityTypeConfiguration<Entities.Table>
+	public class TableMap : IEntityTypeConfiguration<Entities.Table>
 	{
-		public TableMap()
+		public void Configure(EntityTypeBuilder<Entities.Table> builder)
 		{
-			Map(x => x.ToTable("sys.objects"));
-			HasKey(x => x.Id);
-			Property(x => x.Id).HasColumnName("object_id");
-			Property(x => x.IsMSShipped).HasColumnName("is_ms_shipped");
-			Property(x => x.ObjectType).HasColumnName("type");
-			Property(x => x.SchemaId).HasColumnName("schema_id");
+			builder.ToTable("sys.objects");
+			builder.HasKey(x => x.Id);
+			builder.Property(x => x.Id).HasColumnName("object_id");
+			builder.Property(x => x.IsMSShipped).HasColumnName("is_ms_shipped");
+			builder.Property(x => x.ObjectType).HasColumnName("type");
+			builder.Property(x => x.SchemaId).HasColumnName("schema_id");
 		}
 	}
 }

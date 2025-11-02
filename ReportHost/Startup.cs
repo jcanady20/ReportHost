@@ -1,4 +1,6 @@
 
+using Microsoft.EntityFrameworkCore;
+using ReportHost.Data.Context;
 using ReportHost.Internal;
 using Serilog;
 
@@ -28,6 +30,11 @@ public static class Startup
             options.SerializerOptions.WriteIndented = false;
             options.SerializerOptions.PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase;
             options.SerializerOptions.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
+        });
+        builder.Services.AddDbContext<ReportContext>(opts =>
+        {
+            opts.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+            opts.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
         });
         return builder;
     }

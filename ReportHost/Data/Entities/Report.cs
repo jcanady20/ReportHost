@@ -1,4 +1,6 @@
 ﻿namespace ReportHost.Data.Entities;
+
+[ExcludeFromCodeCoverage]
 public class Report
 {
 	public Report()

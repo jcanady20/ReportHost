@@ -1,13 +1,12 @@
 ﻿using System.Data;
-using System.Data.Entity;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 
 using ReportHost.Extensions;
-using System.Configuration;
 using ReportHost.Data.Entities;
 using ReportHost.Data.Models;
 using ReportHost.Data.Context;
 using ReportHost.Data.Queries;
+using Microsoft.EntityFrameworkCore;
 
 namespace ReportHost.Data.Reports
 {
@@ -206,7 +205,7 @@ namespace ReportHost.Data.Reports
 		private string GetConnectionString()
 		{
 			if (_db.Database is not null)
-				return _db.Database.Connection.ConnectionString;
+				return _db.Database.GetConnectionString();
 			
 			return _configuration.GetConnectionString("SqlServer");
 		}

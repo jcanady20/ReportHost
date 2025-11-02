@@ -1,12 +1,12 @@
-﻿using System.Data.Entity;
+﻿using Microsoft.EntityFrameworkCore;
 using ReportHost.Data.Entities;
 
 namespace ReportHost.Data.Context;
 
 public class ReportContext : DbContext
 {
-	public ReportContext() : base() { }
-	public ReportContext(string nameOrConnectionString) : base(nameOrConnectionString) { }
+	public ReportContext(DbContextOptions options) : base(options)
+	{ }
 
 	public DbSet<Report> Reports { get; set; }
 	public DbSet<Table> Tables { get; set; }
@@ -14,9 +14,13 @@ public class ReportContext : DbContext
 	public DbSet<DataType> DataTypes { get; set; }
 	public DbSet<Column> Columns { get; set; }
 
-	protected override void OnModelCreating(DbModelBuilder modelBuilder)
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 	{
-		modelBuilder.Configurations.AddFromAssembly(typeof(ReportContext).Assembly);
-		base.OnModelCreating(modelBuilder);
-	}
+        base.OnConfiguring(optionsBuilder);
+    }
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+	{
+		modelBuilder.ApplyConfigurationsFromAssembly(typeof(ReportContext).Assembly);
+        base.OnModelCreating(modelBuilder);
+    }
 }
