@@ -1,0 +1,6 @@
+
+###
+GET https://localhost:7037/version
+
+###
+GET https://localhost:7037/health

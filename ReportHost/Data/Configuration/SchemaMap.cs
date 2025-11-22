@@ -11,4 +11,3 @@ public class SchemaMap : IEntityTypeConfiguration<Entities.Schema>
 		builder.Property(x => x.Id).HasColumnName("schema_id");
 	}
 }
-

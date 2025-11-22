@@ -1,0 +1,10 @@
+###
+GET https://localhost:7037/api/reports
+
+
+###
+GET https://localhost:7037/api/reports/tables
+
+
+###
+GET https://localhost:7037/api/columns/{{tableName}}

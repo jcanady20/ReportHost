@@ -41,7 +41,6 @@ internal class QueryGenerator
 		{
 			sb.Append(String.Join(",", columns));
 		}
-
 		return sb.ToString();
 	}
 

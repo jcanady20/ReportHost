@@ -8,136 +8,109 @@ using ReportHost.Data.Context;
 using ReportHost.Data.Queries;
 using Microsoft.EntityFrameworkCore;
 
-namespace ReportHost.Data.Reports
+namespace ReportHost.Data.Reports;
+
+public class Generator : IDisposable
 {
-	public class Generator : IDisposable
+	private readonly ReportContext _db;
+	private readonly IConfiguration _configuration;
+
+	public Generator(ReportContext context, IConfiguration configuration)
 	{
-		private readonly ReportContext _db;
-		private readonly IConfiguration _configuration;
+		_db = context;
+		_configuration = configuration;
+	}
+	
+	public IEnumerable<Dictionary<string, object>> Generate(Criteria criteria)
+	{
+		var baseQuery = GetReportQuery(criteria);
+		var columnDetails = GetColumnDetails(baseQuery);
+		var tsql = QueryGenerator.RenderReportQuery(baseQuery, criteria, columnDetails);
+		return ExecuteResults(tsql);
+	}
 
-		public Generator(ReportContext context, IConfiguration configuration)
-		{
-			_db = context;
-			_configuration = configuration;
-        }
-		
-		public IEnumerable<Dictionary<string, object>> Generate(Criteria criteria)
-		{
-			var baseQuery = GetReportQuery(criteria);
-			var columnDetails = GetColumnDetails(baseQuery);
-			var tsql = QueryGenerator.RenderReportQuery(baseQuery, criteria, columnDetails);
-			return ExecuteResults(tsql);
-		}
+	public async Task<IEnumerable<IDictionary<string, object>>> GenerateAsync(Criteria criteria)
+	{
+		var baseQuery = await GetReportQueryAsync(criteria);
+		var columnDetails = await GetColumnDetailsAsync(baseQuery);
+		var tsql = QueryGenerator.RenderReportQuery(baseQuery, criteria, columnDetails);
+		return await ExecuteResultsAsync(tsql);
+	}
 
-		public async Task<IEnumerable<IDictionary<string, object>>> GenerateAsync(Criteria criteria)
-		{
-			var baseQuery = await GetReportQueryAsync(criteria);
-			var columnDetails = await GetColumnDetailsAsync(baseQuery);
-			var tsql = QueryGenerator.RenderReportQuery(baseQuery, criteria, columnDetails);
-			return await ExecuteResultsAsync(tsql);
-		}
+	public IEnumerable<Column> TableColumns(string tableName, string schemaName = "dbo")
+	{
+		var columns = _db.GetTableColumns(tableName, schemaName);
+		return columns;
+	}
 
-		public IEnumerable<Column> TableColumns(string tableName, string schemaName = "dbo")
-		{
-			var columns = _db.GetTableColumns(tableName, schemaName);
-			return columns;
-		}
+	public async Task<IEnumerable<Column>> TableColumsAsync(string tableName, string schemaName = "dbo")
+	{
+		var columns = await _db.Tables.GetTableColumnsAsync(tableName, schemaName);
+		return columns;
+	}
 
-		public async Task<IEnumerable<Column>> TableColumsAsync(string tableName, string schemaName = "dbo")
+	private string GetReportQuery(Criteria criteria)
+	{
+		var query = string.Empty;
+		if (criteria.ReportId.HasValue)
 		{
-			var columns = await _db.Tables.GetTableColumnsAsync(tableName, schemaName);
-			return columns;
-		}
-
-		private string GetReportQuery(Criteria criteria)
-		{
-			var query = string.Empty;
-			if (criteria.ReportId.HasValue)
+			var report = _db.GetReportById(criteria.ReportId.Value);
+			if (report != null)
 			{
-				var report = _db.GetReportById(criteria.ReportId.Value);
-				if (report != null)
-				{
-					query = report.Query;
-				}
+				query = report.Query;
 			}
-            else if (String.IsNullOrEmpty(criteria.TableName) == false)
-            {
-                query = String.Format("SELECT * FROM {0}", criteria.TableName);
-            }
-            if (String.IsNullOrEmpty(query))
-            {
-                throw new Exception("Unable to materize base query");
-            }
-            return query;
 		}
-		
-		private async Task<string> GetReportQueryAsync(Criteria criteria)
+		else if (String.IsNullOrEmpty(criteria.TableName) == false)
 		{
-			var query = String.Empty;
-            if (criteria.ReportId.HasValue)
-            {
-                var report = await _db.GetReportByIdAsync(criteria.ReportId.Value);
-                if (report != null)
-                {
-                    query = report.Query;
-                }
-            }
-            else if (String.IsNullOrEmpty(criteria.TableName) == false)
-            {
-                query = String.Format("SELECT * FROM {0}", criteria.TableName);
-            }
-            if(String.IsNullOrEmpty(query))
-            {
-                throw new Exception("Unable to materize base query");
-            }
-			return query;
+			query = String.Format("SELECT * FROM {0}", criteria.TableName);
 		}
-
-		private ICollection<ColumnDetail> GetColumnDetails(string tsql)
+		if (String.IsNullOrEmpty(query))
 		{
-			var columnDetails = new List<ColumnDetail>();
-			using(var conn = new SqlConnection(GetConnectionString()))
+			throw new Exception("Unable to materize base query");
+		}
+		return query;
+	}
+	
+	private async Task<string> GetReportQueryAsync(Criteria criteria)
+	{
+		var query = String.Empty;
+		if (criteria.ReportId.HasValue)
+		{
+			var report = await _db.GetReportByIdAsync(criteria.ReportId.Value);
+			if (report != null)
 			{
-				conn.Open();
-				using(var cmd = conn.CreateCommand())
-				{
-					cmd.CommandType = CommandType.Text;
-					cmd.CommandText = tsql;
-
-					var reader = cmd.ExecuteReader(CommandBehavior.KeyInfo | CommandBehavior.SchemaOnly);
-					columnDetails = reader
-						.GetSchemaTable()
-						.AsEnumerable()
-						.Select(r =>
-							new ColumnDetail()
-							{
-								IsUnique = r.GetBoolean("IsUnique"),
-								IsKey = r.GetBoolean("IsKey"),
-								ColumnName = r.GetString("ColumnName"),
-								ColumnOrdinal = r.GetInt32("ColumnOrdinal"),
-								BaseTableName = r.GetString("BaseTableName"),
-								DataType = r.Get<Type>("DataType").Name
-							}).ToList();
-				}
+				query = report.Query;
 			}
-			return columnDetails;
 		}
-
-		private async Task<ICollection<ColumnDetail>> GetColumnDetailsAsync(string tsql)
+		else if (String.IsNullOrEmpty(criteria.TableName) == false)
 		{
-			var columnDetails = new List<ColumnDetail>();
-			using(var conn = new SqlConnection(GetConnectionString()))
+			query = String.Format("SELECT * FROM {0}", criteria.TableName);
+		}
+		if(String.IsNullOrEmpty(query))
+		{
+			throw new Exception("Unable to materize base query");
+		}
+		return query;
+	}
+
+	private ICollection<ColumnDetail> GetColumnDetails(string tsql)
+	{
+		var columnDetails = new List<ColumnDetail>();
+		using(var conn = new SqlConnection(GetConnectionString()))
+		{
+			conn.Open();
+			using(var cmd = conn.CreateCommand())
 			{
-				await conn.OpenAsync();
-				using(var cmd = conn.CreateCommand())
-				{
-					cmd.CommandType = CommandType.Text;
-					cmd.CommandText = tsql;
-					var reader = await cmd.ExecuteReaderAsync(CommandBehavior.KeyInfo | CommandBehavior.SchemaOnly);
-					columnDetails = reader
-						.GetSchemaTable()
-						.AsEnumerable()
-						.Select(r => new ColumnDetail() {
+				cmd.CommandType = CommandType.Text;
+				cmd.CommandText = tsql;
+
+				var reader = cmd.ExecuteReader(CommandBehavior.KeyInfo | CommandBehavior.SchemaOnly);
+				columnDetails = reader
+					.GetSchemaTable()
+					.AsEnumerable()
+					.Select(r =>
+						new ColumnDetail()
+						{
 							IsUnique = r.GetBoolean("IsUnique"),
 							IsKey = r.GetBoolean("IsKey"),
 							ColumnName = r.GetString("ColumnName"),
@@ -145,83 +118,109 @@ namespace ReportHost.Data.Reports
 							BaseTableName = r.GetString("BaseTableName"),
 							DataType = r.Get<Type>("DataType").Name
 						}).ToList();
-				}
 			}
-			return columnDetails;
 		}
+		return columnDetails;
+	}
 
-		private IEnumerable<Dictionary<string, object>> ExecuteResults(string tsql)
+	private async Task<ICollection<ColumnDetail>> GetColumnDetailsAsync(string tsql)
+	{
+		var columnDetails = new List<ColumnDetail>();
+		using(var conn = new SqlConnection(GetConnectionString()))
 		{
-			using(var conn = new SqlConnection(GetConnectionString()))
+			await conn.OpenAsync();
+			using(var cmd = conn.CreateCommand())
 			{
-				conn.Open();
+				cmd.CommandType = CommandType.Text;
+				cmd.CommandText = tsql;
+				var reader = await cmd.ExecuteReaderAsync(CommandBehavior.KeyInfo | CommandBehavior.SchemaOnly);
+				columnDetails = reader
+					.GetSchemaTable()
+					.AsEnumerable()
+					.Select(r => new ColumnDetail() {
+						IsUnique = r.GetBoolean("IsUnique"),
+						IsKey = r.GetBoolean("IsKey"),
+						ColumnName = r.GetString("ColumnName"),
+						ColumnOrdinal = r.GetInt32("ColumnOrdinal"),
+						BaseTableName = r.GetString("BaseTableName"),
+						DataType = r.Get<Type>("DataType").Name
+					}).ToList();
+			}
+		}
+		return columnDetails;
+	}
 
-				using(var cmd = conn.CreateCommand())
+	private IEnumerable<Dictionary<string, object>> ExecuteResults(string tsql)
+	{
+		using(var conn = new SqlConnection(GetConnectionString()))
+		{
+			conn.Open();
+
+			using(var cmd = conn.CreateCommand())
+			{
+				cmd.CommandType = CommandType.Text;
+				cmd.CommandTimeout = 60;
+				cmd.CommandText = tsql;
+				using(var reader = cmd.ExecuteReader(CommandBehavior.SequentialAccess))
 				{
-					cmd.CommandType = CommandType.Text;
-					cmd.CommandTimeout = 60;
-					cmd.CommandText = tsql;
-					using(var reader = cmd.ExecuteReader(CommandBehavior.SequentialAccess))
+					if (reader.HasRows)
 					{
-						if (reader.HasRows)
+						while (reader.Read())
 						{
-							while (reader.Read())
-							{
-								yield return reader.FlattenRecord();
-							}
+							yield return reader.FlattenRecord();
 						}
 					}
 				}
 			}
 		}
+	}
 
-		private async Task<IEnumerable<IDictionary<string, object>>> ExecuteResultsAsync(string tsql)
+	private async Task<IEnumerable<IDictionary<string, object>>> ExecuteResultsAsync(string tsql)
+	{
+		var records = new List<Dictionary<string, object>>();
+		using (var conn = new SqlConnection(GetConnectionString()))
 		{
-			var records = new List<Dictionary<string, object>>();
-			using (var conn = new SqlConnection(GetConnectionString()))
-			{
-				await conn.OpenAsync();
+			await conn.OpenAsync();
 
-				using (var cmd = conn.CreateCommand())
+			using (var cmd = conn.CreateCommand())
+			{
+				cmd.CommandType = CommandType.Text;
+				cmd.CommandTimeout = 60;
+				cmd.CommandText = tsql;
+				using (var reader = await cmd.ExecuteReaderAsync())
 				{
-					cmd.CommandType = CommandType.Text;
-					cmd.CommandTimeout = 60;
-					cmd.CommandText = tsql;
-					using (var reader = await cmd.ExecuteReaderAsync())
+					if (reader.HasRows)
 					{
-						if (reader.HasRows)
+						while (reader.Read())
 						{
-							while (reader.Read())
-							{
-								records.Add(reader.FlattenRecord());
-							}
+							records.Add(reader.FlattenRecord());
 						}
 					}
 				}
 			}
-			return records;
 		}
+		return records;
+	}
 
-		private string GetConnectionString()
-		{
-			if (_db.Database is not null)
-				return _db.Database.GetConnectionString();
-			
-			return _configuration.GetConnectionString("SqlServer");
-		}
+	private string GetConnectionString()
+	{
+		if (_db.Database is not null)
+			return _db.Database.GetConnectionString();
+		
+		return _configuration.GetConnectionString("SqlServer");
+	}
 
-		public void Dispose()
-		{
-			this.Dispose(true);
-			GC.SuppressFinalize(this);
-		}
+	public void Dispose()
+	{
+		this.Dispose(true);
+		GC.SuppressFinalize(this);
+	}
 
-		protected virtual void Dispose(bool disposing)
+	protected virtual void Dispose(bool disposing)
+	{
+		if(disposing)
 		{
-			if(disposing)
-			{
-				_db.Dispose();
-			}
+			_db.Dispose();
 		}
 	}
 }

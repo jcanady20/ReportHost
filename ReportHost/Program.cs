@@ -16,5 +16,10 @@ app.UseReportHostExceptionHandler();
 app.AddHealthEndpoint("/health");
 app.AddVersionEndpoint("/version");
 app.UseHttpsRedirection();
+app.UseAuthentication();
+app.UseAuthorization();
+app.UseSerilogRequestLogging();
+app.UseHttpLogging();
+app.UseExceptionHandler();
 
 await app.RunAsync();

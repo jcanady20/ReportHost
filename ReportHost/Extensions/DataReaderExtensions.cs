@@ -31,7 +31,6 @@ public static class DataReaderExtensions
 			}
 			result.Add(col, reader[col]);
 		}
-
 		return result;
 	}
 

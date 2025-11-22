@@ -5,7 +5,7 @@ namespace ReportHost.Endpoints;
 [ExcludeFromCodeCoverage]
 public static class VersionEndpoint
 {
-  private static (Version Version, string Name) GetAssemblyVersion()
+  public static (Version Version, string Name) GetAssemblyVersion()
   {
     var assm = System.Reflection.Assembly.GetEntryAssembly();
     var details = assm.GetName();

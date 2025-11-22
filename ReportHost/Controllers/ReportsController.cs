@@ -4,13 +4,16 @@ using ReportHost.Data.Models;
 using ReportHost.Data.Queries;
 using ReportHost.Data.Reports;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
 namespace ReportHost.Controllers;
 
+[Authorize]
+[ApiController]
 [Route("api/reports")]
 public class ReportsController : Controller
 {
-	private ReportContext _db;
-	private Generator _generator;
+	private readonly ReportContext _db;
+	private readonly Generator _generator;
 
 	public ReportsController(ReportContext context, Generator generator)
 	{
